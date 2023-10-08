@@ -7,36 +7,9 @@ from xmlrpc.server import SimpleXMLRPCRequestHandler
 
 
 #Deklarasi
-class Calon:
-    def __init__(self, namaPasangan1, namaPasangan2):
-        self.namaPasangan1 = namaPasangan1
-        self.namaPasangan2 = namaPasangan2
-        self.jumlahVote = 0
+calonBem = {"nama1":"Muhammad Abiya Makruf","jumlahVoteNama1":0,"nama2":"Muhammad Gading Makruf","jumlahVoteNama2":0}
 
-    def getNamaPasangan(self):
-        return self.namaPasangan1, self.namaPasangan2
-    
-    def jumlahVote(self):
-        return self.jumlahVote
-    
-    def tambahVote(self):
-        self.jumlahVote += 1
 
-Calon1 = Calon("Abiya", "Makruf")
-Calon2 = Calon("Gading", "Makruf")
-
-def voting(calon):
-    if calon == 1:
-        Calon1.tambahVote()
-        return "Terima kasih telah memilih"
-    elif calon == 2:
-        Calon2.tambahVote()
-        return "Terima kasih telah memilih"
-    else:
-        return "Pilihan tidak tersedia"
-    
-def hasilVoting():
-    return "Pasangan 1: " + str(Calon1.jumlahVote) + " suara, Pasangan 2: " + str(Calon2.jumlahVote) + " suara" 
 
 #Server
 class requestHandler(SimpleXMLRPCRequestHandler):
@@ -44,8 +17,24 @@ class requestHandler(SimpleXMLRPCRequestHandler):
 
 with SimpleXMLRPCServer(('localhost', 8008), requestHandler=requestHandler) as server:
     server.register_introspection_functions()
+
+    def voting(inputVoting):
+        if inputVoting == 1:
+            calonBem["jumlahVoteNama1"] += 1
+        elif inputVoting == 2:
+            calonBem["jumlahVoteNama2"] += 1
+        return("Vote berhasil. Terima kasih atas partisipasinya\n")
+
+    def daftarCalon():
+        return f"\n===== Daftar Calon BEM ===== \n1.{calonBem['nama1']} \n2.{calonBem['nama2']}\n"
+    
+    def hasilVoting():
+        return f"\n===== Hasil Voting ===== \n1.{calonBem['nama1']} : {calonBem['jumlahVoteNama1']} \n2.{calonBem['nama2']} : {calonBem['jumlahVoteNama2']}\n"
+
     server.register_function(voting, 'voting')
+    server.register_function(daftarCalon, 'daftarCalon')
     server.register_function(hasilVoting, 'hasilVoting')
+
     server.serve_forever()
 
 
